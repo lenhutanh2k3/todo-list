@@ -28,12 +28,12 @@
                         </td>
                         <td>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</td>
                         <td>
-                            @if ($task->status == 'pending')
-                                <span class="badge bg-warning text-dark">Đang làm</span>
-                            @elseif ($task->status == 'completed')
-                                <span class="badge bg-success">Hoàn thành</span>
-                            @else
-                                <span class="badge bg-secondary">Chưa rõ</span>
+                            @if ($task->status == '0')
+                                <span class="badge bg-warning text-dark">Chưa làm</span>
+                            @elseif ($task->status == '1')
+                                <span class="badge bg-success">Đang làm</span>
+                            @elseif ($task->status == '2')
+                                <span class="badge bg-secondary">Hoàn thành</span>
                             @endif
                         </td>
                         <td class="text-end">
