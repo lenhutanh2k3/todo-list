@@ -25,8 +25,11 @@
                     </p>
 
                     <div class="mt-4 d-flex justify-content-end">
-                        <a href="{{ route('tasks.edit', 1) }}" class="btn btn-warning me-2">✏️ Sửa</a>
-                        <button class="btn btn-danger">🗑 Xóa</button>
+                        <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</button>
+                        </form>
                     </div>
                 </div>
             </div>
