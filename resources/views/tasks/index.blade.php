@@ -1,6 +1,17 @@
 @extends('tasks.layout')
 
 @section('content')
+    @if(session('success'))
+        <div class="alert alert-success" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
 <div class="card shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Danh sách công việc</h5>
