@@ -26,8 +26,9 @@
                     <div class="mb-3">
                         <label for="status" class="form-label">Trạng thái</label>
                         <select id="status" class="form-select">
-                            <option value="pending" {{ $task->status == 'pending' ? 'selected' : ''}}>Đang làm</option>
-                            <option value="done" {{ $task->status == 'done' ? 'selected' : ''}}>Hoàn thành</option>
+                            <option value="0" {{ $task->status == '0' ? 'selected' : ''}}>Chưa làm</option>
+                            <option value="1" {{ $task->status == '1' ? 'selected' : ''}}>Đang làm</option>
+                            <option value="1" {{ $task->status == '2' ? 'selected' : ''}}>Hoàn thành</option>
                         </select>
                     </div>
                     <div class="d-flex justify-content-between">
