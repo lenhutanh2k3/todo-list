@@ -1,6 +1,17 @@
 @extends('tasks.layout')
 
 @section('content')
+    @if(session('success'))
+        <div class="alert alert-success" role="alert">
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+    @endif
+
 <div class="card shadow-sm">
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Danh sách công việc</h5>
@@ -28,12 +39,12 @@
                         </td>
                         <td>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</td>
                         <td>
-                            @if ($task->status == 'pending')
-                                <span class="badge bg-warning text-dark">Đang làm</span>
-                            @elseif ($task->status == 'completed')
-                                <span class="badge bg-success">Hoàn thành</span>
-                            @else
-                                <span class="badge bg-secondary">Chưa rõ</span>
+                            @if ($task->status == '0')
+                                <span class="badge bg-warning text-dark">Chưa làm</span>
+                            @elseif ($task->status == '1')
+                                <span class="badge bg-success">Đang làm</span>
+                            @elseif ($task->status == '2')
+                                <span class="badge bg-secondary">Hoàn thành</span>
                             @endif
                         </td>
                         <td class="text-end">

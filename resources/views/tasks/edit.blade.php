@@ -8,26 +8,30 @@
                 <h5 class="mb-0">✏️ Sửa công việc</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('tasks.update', $task->id) }}" method="PUT">
+                <form action="{{ route('tasks.update', $task->id) }}" method="POST" novalidate>
                     @csrf
                     @method('PUT')
                     <div class="mb-3">
                         <label for="title" class="form-label">Tên công việc</label>
-                        <input type="text" class="form-control" id="title" value="{{ $task->title }}">
+                        <input type="text" class="form-control" name="title"
+                        id="title" value="{{ $task->title }}">
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Mô tả</label>
-                        <textarea class="form-control" id="description" rows="3">{{ $task->description }}</textarea>
+                        <textarea class="form-control" id="description" name="description"
+                         rows="3">{{ $task->description }}</textarea>
+                        
                     </div>
                     <div class="mb-3">
                         <label for="due_date" class="form-label">Hạn chót</label>
-                        <input type="date" class="form-control" id="due_date" value="{{ \Carbon\Carbon::parse($task->due_date)->format('Y-m-d') }}">
+                        <input type="date" class="form-control" name="due_date" id="due_date" value="{{ \Carbon\Carbon::parse($task->due_date)->format('Y-m-d') }}">
                     </div>
                     <div class="mb-3">
                         <label for="status" class="form-label">Trạng thái</label>
-                        <select id="status" class="form-select">
-                            <option value="pending" {{ $task->status == 'pending' ? 'selected' : ''}}>Đang làm</option>
-                            <option value="done" {{ $task->status == 'done' ? 'selected' : ''}}>Hoàn thành</option>
+                        <select id="status" name="status" class="form-select">
+                            <option value="0" {{ $task->status == '0' ? 'selected' : ''}}>Chưa làm</option>
+                            <option value="1" {{ $task->status == '1' ? 'selected' : ''}}>Đang làm</option>
+                            <option value="2" {{ $task->status == '2' ? 'selected' : ''}}>Hoàn thành</option>
                         </select>
                     </div>
                     <div class="d-flex justify-content-between">
