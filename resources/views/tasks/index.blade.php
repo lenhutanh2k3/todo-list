@@ -25,6 +25,8 @@
                     <th>Công việc</th>
                     <th>Hạn chót</th>
                     <th>Trạng thái</th>
+                    <th>Thời gian tạo</th>
+                    <th>Người thực hiện</th>
                     <th class="text-end">Hành động</th>
                 </tr>
             </thead>
@@ -40,13 +42,15 @@
                         <td>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</td>
                         <td>
                             @if ($task->status == '0')
-                                <span class="badge bg-warning text-dark">Chưa làm</span>
+                            <span class="badge bg-warning text-dark">Chưa làm</span>
                             @elseif ($task->status == '1')
-                                <span class="badge bg-success">Đang làm</span>
+                            <span class="badge bg-success">Đang làm</span>
                             @elseif ($task->status == '2')
-                                <span class="badge bg-secondary">Hoàn thành</span>
+                            <span class="badge bg-secondary">Hoàn thành</span>
                             @endif
                         </td>
+                        <td>{{ \Carbon\Carbon::parse($task->created_at)->format('d/m/Y') }}</td>
+                        <td>{{ $task->user->name  }}</td>
                         <td class="text-end">
                             <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-info text-white">Xem</a>
                             <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-sm btn-warning">Sửa</a>
@@ -66,6 +70,10 @@
                 @endforelse
             </tbody>
         </table>
+        <div>
+             {{ $tasks->links('vendor.pagination.bootstrap-5') }}
+        </div>
+       
     </div>
 </div>
 @endsection
