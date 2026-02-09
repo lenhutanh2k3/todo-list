@@ -22,7 +22,12 @@ class TaskController extends Controller
                     $q->orWhere('description','LIKE','%'.$request->search.'%');
                 });
             }
-        $tasks= $query->with('user')->paginate(5);
+        //Filter
+        if ($request->filled('status'))
+        {
+            $query->where('status', $request->status);
+        }
+        $tasks= $query->with('user')->paginate(5)->withQueryString();
         return view('tasks.index', compact('tasks'));
     }
 
