@@ -22,6 +22,10 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth'])->group(function () {
     Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
 		Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
+        Route::get('/trash',[TaskController::class,'trash'])->name('tasks.trash');
+        Route::post('/{id}/restore',[TaskController::class,'restore'])->name('tasks.restore');
+        Route::delete('/{id}/forceDelete',[TaskController::class,'forceDelete'])->name('tasks.forceDelete');
+        Route::delete('/forceDeleteAll',[TaskController::class,'forceDeleteAll'])->name('tasks.forceDeleteAll');
 		Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
 		Route::get('/{task}', [TaskController::class, 'show'])->name('tasks.show');
 		Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
