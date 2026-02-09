@@ -27,6 +27,25 @@ class TaskController extends Controller
         {
             $query->where('status', $request->status);
         }
+        //Sort
+        switch($request->sort_option)
+        {
+            case 'due_date_asc':
+                $query->orderBy('due_date', 'asc');
+                break;
+            case 'due_date_desc':
+                $query->orderBy('due_date', 'desc');
+                break;
+            case 'created_at_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'created_at_desc':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('id', 'desc');
+                break;
+        }
         $tasks= $query->with('user')->paginate(5)->withQueryString();
         return view('tasks.index', compact('tasks'));
     }
