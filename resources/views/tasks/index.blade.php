@@ -34,10 +34,14 @@
                 <div class="col-md-3">
                     <select name="sort_option" class="form-select">
                         <option value="">-- Sắp xếp theo --</option>
-                        <option value="due_date_asc" @if (request('sort_option') === 'due_date_asc') selected @endif>Sắp đến hạn chót</option>
-                        <option value="due_date_desc" @if (request('sort_option') === 'due_date_desc') selected @endif>Chưa đến hạn chót</option>
-                        <option value="created_at_asc" @if (request('sort_option') === 'created_at_asc') selected @endif>Ngày tạo cũ nhất</option>
-                        <option value="created_at_desc" @if (request('sort_option') === 'created_at_desc') selected @endif>Ngày tạo mới nhất</option>
+                        <option value="due_date_asc" @if (request('sort_option') === 'due_date_asc') selected @endif>Sắp đến
+                            hạn chót</option>
+                        <option value="due_date_desc" @if (request('sort_option') === 'due_date_desc') selected @endif>Chưa
+                            đến hạn chót</option>
+                        <option value="created_at_asc" @if (request('sort_option') === 'created_at_asc') selected @endif>Ngày
+                            tạo cũ nhất</option>
+                        <option value="created_at_desc" @if (request('sort_option') === 'created_at_desc') selected @endif>
+                            Ngày tạo mới nhất</option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -51,6 +55,7 @@
                         <th>Công việc</th>
                         <th>Hạn chót</th>
                         <th>Trạng thái</th>
+                        <th>Cập nhật trạng thái</th>
                         <th>Thời gian tạo</th>
                         <th>Người thực hiện</th>
                         <th class="text-end">Hành động</th>
@@ -58,7 +63,7 @@
                 </thead>
                 <tbody>
                     @forelse ($tasks as $task)
-                        <tr>
+                        <tr data-id="{{ $task->id }}">
                             <td>{{ $task->id }}</td>
                             <td>
                                 <span
@@ -69,12 +74,26 @@
                             <td>{{ \Carbon\Carbon::parse($task->due_date)->format('d/m/Y') }}</td>
                             <td>
                                 @if ($task->status == '0')
-                                    <span class="badge bg-warning text-dark">Chưa làm</span>
+                                    <span class="badge bg-warning text-dark badge-status">Chưa làm</span>
                                 @elseif ($task->status == '1')
-                                    <span class="badge bg-success">Đang làm</span>
+                                    <span class="badge bg-success badge-status">Đang làm</span>
                                 @elseif ($task->status == '2')
-                                    <span class="badge bg-secondary">Hoàn thành</span>
+                                    <span class="badge bg-secondary badge-status">Hoàn thành</span>
                                 @endif
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        Cập nhật trạng thái
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item change-status" data-status="0" href="#">Chưa làm</a></li>
+                                        <li><a class="dropdown-item change-status" data-status="1" href="#">Đang làm</a></li>
+                                        <li><a class="dropdown-item change-status" data-status="2" href="#">Hoàn thành</a></li>
+                                    </ul>
+
+                                </div>
                             </td>
                             <td>{{ \Carbon\Carbon::parse($task->created_at)->format('d/m/Y') }}</td>
                             <td>{{ $task->user->name  }}</td>
@@ -105,3 +124,58 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function () {
+            $('.change-status').click(function (e) {
+                e.preventDefault();
+
+                const taskRow = $(this).closest('tr');
+                const taskId = taskRow.data('id');
+                const newStatus = $(this).data('status');
+
+                $.ajax({
+                    url: `/task/${taskId}/status`,
+                    type: 'PATCH',
+                    data: {
+                        status: newStatus,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            const badge = taskRow.find('.badge-status');
+                            let badgeText = '';
+                            let badgeClass = 'badge';
+
+                            switch (response.status) {
+                                case '0':
+                                case 0:
+                                    badgeText = 'Chưa làm';
+                                    badgeClass += ' bg-warning text-dark';
+                                    break;
+                                case '1':
+                                case 1:
+                                    badgeText = 'Đang làm';
+                                    badgeClass += ' bg-success';
+                                    break;
+                                case '2':
+                                case 2:
+                                    badgeText = 'Hoàn thành';
+                                    badgeClass += ' bg-secondary';
+                                    break;
+                            }
+
+                            badge.attr('class', badgeClass + ' badge-status').text(badgeText);
+                            toastr.success(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi cập nhật trạng thái!');
+                    }
+                    
+                });
+            });
+        });
+    </script>
+
+@endpush
