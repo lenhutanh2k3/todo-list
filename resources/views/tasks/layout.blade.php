@@ -30,9 +30,13 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand text-primary" href="{{ url('/') }}">📝 Todo List Pro</a>
-            <div>
-                <a href="{{ route('tasks.index') }}" class="btn btn-outline-primary me-2">Danh sách</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('tasks.index') }}" class="btn btn-outline-primary">Danh sách</a>
                 <a href="{{ route('tasks.create') }}" class="btn btn-primary">+ Thêm Task</a>
+                <form method="POST" action="{{ route('logout') }}" class="ms-1">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-secondary">Đăng xuất</button>
+                </form>
             </div>
         </div>
     </nav>
