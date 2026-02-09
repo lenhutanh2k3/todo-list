@@ -16,8 +16,13 @@
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Danh sách công việc</h5>
             <div class="d-flex gap-2">
-                <a href="{{ route('tasks.create') }}" class="btn btn-sm btn-primary">+ Thêm Task</a>
-                <a href="{{ route('tasks.trash') }}" class="btn btn-sm btn-danger">Thùng rác</a>
+                <a href="{{ route('tasks.index') }}" class="btn btn-sm btn-primary">Quay lại</a>
+                <form action="{{ route('tasks.forceDeleteAll')}}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Bạn có chắc muốn xóa tất cả không?')">Xóa tất cả</button>
+                </form>
             </div>
 
         </div>
@@ -102,15 +107,18 @@
                             <td>{{ \Carbon\Carbon::parse($task->created_at)->format('d/m/Y') }}</td>
                             <td>{{ $task->user->name  }}</td>
                             <td class="text-end">
-                                <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-info text-white">Xem</a>
-                                <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-sm btn-warning">Sửa</a>
-
                                 {{-- Form xóa (Cần dùng POST/DELETE thay vì thẻ <a>) --}}
-                                    <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('tasks.restore', $task->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('POST')
+                                        <button type="submit" class="btn btn-sm btn-success"
+                                            onclick="return confirm('Bạn có chắc muốn khôi phục?')">Khôi phục</button>
+                                    </form>
+                                    <form action="{{ route('tasks.forceDelete', $task->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</button>
+                                            onclick="return confirm('Bạn có chắc muốn xóa không?')">Xóa</button>
                                     </form>
                             </td>
                         </tr>
@@ -128,58 +136,3 @@
         </div>
     </div>
 @endsection
-@push('scripts')
-    <script>
-        $(document).ready(function () {
-            $('.change-status').click(function (e) {
-                e.preventDefault();
-
-                const taskRow = $(this).closest('tr');
-                const taskId = taskRow.data('id');
-                const newStatus = $(this).data('status');
-
-                $.ajax({
-                    url: `/task/${taskId}/status`,
-                    type: 'PATCH',
-                    data: {
-                        status: newStatus,
-                        _token: "{{ csrf_token() }}"
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            const badge = taskRow.find('.badge-status');
-                            let badgeText = '';
-                            let badgeClass = 'badge';
-
-                            switch (response.status) {
-                                case '0':
-                                case 0:
-                                    badgeText = 'Chưa làm';
-                                    badgeClass += ' bg-warning text-dark';
-                                    break;
-                                case '1':
-                                case 1:
-                                    badgeText = 'Đang làm';
-                                    badgeClass += ' bg-success';
-                                    break;
-                                case '2':
-                                case 2:
-                                    badgeText = 'Hoàn thành';
-                                    badgeClass += ' bg-secondary';
-                                    break;
-                            }
-
-                            badge.attr('class', badgeClass + ' badge-status').text(badgeText);
-                            toastr.success(response.message);
-                        }
-                    },
-                    error: function () {
-                        alert('Có lỗi xảy ra khi cập nhật trạng thái!');
-                    }
-
-                });
-            });
-        });
-    </script>
-
-@endpush

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class TaskController extends Controller
 {
     /**
@@ -49,7 +51,44 @@ class TaskController extends Controller
         $tasks= $query->with('user')->paginate(5)->withQueryString();
         return view('tasks.index', compact('tasks'));
     }
-
+    public function trash(Request $request)
+    {
+        $query = Task::query();
+        if ($request->filled('search'))
+            {
+                $query->where(function($q) use($request)
+                {
+                    $q->where('title','LIKE','%'.$request->search.'%');
+                    $q->orWhere('description','LIKE','%'.$request->search.'%');
+                });
+            }
+        //Filter
+        if ($request->filled('status'))
+        {
+            $query->where('status', $request->status);
+        }
+        //Sort
+        switch($request->sort_option)
+        {
+            case 'due_date_asc':
+                $query->orderBy('due_date', 'asc');
+                break;
+            case 'due_date_desc':
+                $query->orderBy('due_date', 'desc');
+                break;
+            case 'created_at_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'created_at_desc':
+                $query->orderBy('created_at', 'desc');
+                break;
+            default:
+                $query->orderBy('id', 'desc');
+                break;
+        }
+        $tasks= $query->onlyTrashed()->with('user')->paginate(5)->withQueryString();
+        return view('tasks.trash', compact('tasks'));
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -123,5 +162,20 @@ class TaskController extends Controller
             'message'=> 'Update status successfully!',
             'status' => $task->status 
         ]);
+    }
+    public function restore($id)
+    {
+        Task::withTrashed()->findOrFail($id)->restore();
+        return redirect()->route('tasks.index')->with('success','Restore task successfully!');
+    }
+    public function forceDelete($id)
+    {
+        Task::withTrashed()->findOrFail($id)->forceDelete();
+        return redirect()->route('tasks.trash')->with('success','Force delete task successfully!');
+    }
+    public function forceDeleteAll()
+    {
+        Task::onlyTrashed()->forceDelete();
+        return redirect()->route('tasks.trash')->with('success','Force delete all task successfully!'); 
     }
 }
