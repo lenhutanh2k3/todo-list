@@ -18,6 +18,31 @@
         <a href="{{ route('tasks.create') }}" class="btn btn-sm btn-primary">+ Thêm Task</a>
     </div>
     <div class="card-body">
+        <form method="GET" action="{{ route('tasks.index') }}" class="row mb-3">
+            <div class="col-md-4">
+                <input type="text" name="search" class="form-control" value="{{ request('search')}}" placeholder=" Tìm kiếm task...">
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">-- Lọc theo trạng thái --</option>
+                    <option value="0">Chưa làm</option>
+                    <option value="1">Đang làm</option>
+                    <option value="2">Hoàn thành</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="sort_option" class="form-select">
+                    <option value="">-- Sắp xếp theo --</option>
+                    <option value="due_date_asc">Hạn chót tăng dần</option>
+                    <option value="due_date_desc">Hạn chót giảm dần</option>
+                    <option value="created_at_asc">Ngày tạo cũ nhất</option>
+                    <option value="created_at_desc">Ngày tạo mới nhất</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            </div>
+        </form>
         <table class="table table-hover align-middle">
             <thead>
                 <tr>

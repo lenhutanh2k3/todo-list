@@ -11,10 +11,18 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-      
-        $tasks = Task::with('user')->orderBy('created_at', 'desc')->paginate(5);
+        $query = Task::query();
+        if ($request->filled('search'))
+            {
+                $query->where(function($q) use($request)
+                {
+                    $q->where('title','LIKE','%'.$request->search.'%');
+                    $q->orWhere('description','LIKE','%'.$request->search.'%');
+                });
+            }
+        $tasks= $query->with('user')->paginate(5);
         return view('tasks.index', compact('tasks'));
     }
 
